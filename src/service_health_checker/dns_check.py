@@ -1,6 +1,11 @@
 import time, socket
 
 def dns_check(service):
+    """
+    Attempts to perform a forward DNS lookup to a service, 
+    measuring the time it takes.
+    """
+    print("---DNS LOOKUP---")
     try:
         start_time = time.perf_counter()
         ip_address = socket.gethostbyname(service)
@@ -11,4 +16,3 @@ def dns_check(service):
         print(f"Lookup Time: {duration_ms:.2f} ms")
     except socket.gaierror as e:
         print(f"DNS lookup failed for {service}: {e}")
-        

@@ -3,6 +3,7 @@ from typing_extensions import Annotated
 
 from .dns_check import dns_check
 from .check_tcp_connection import check_tcp_connection
+from .make_http_request import make_http_request
 
 def health_check(
     service: Annotated[str, typer.Argument(help="The services to be checked")] = ""
@@ -28,5 +29,14 @@ def health_check(
     else:
         message = tcp_check_result["message"]
         logging.error(f"TCP check failed: {service} {message}")
-    print()
+
+    http_check_result = make_http_request(service=service)
+    status_code = http_check_result["status_code"]
+    duration = http_check_result["duration"]
+    if status_code == 200:
+        logging.info(f"HTTP check passed: {service} {status_code} {duration:.2f}s")
+    elif status_code < 500:
+        logging.warning(f"Unexpected HTTP result: {service} {status_code} {duration:.2f}s")
+    else:
+        logging.error(f"HTTP check failed: {service} {status_code} {duration:.2f}s")
     

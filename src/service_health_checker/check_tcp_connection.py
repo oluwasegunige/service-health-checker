@@ -5,7 +5,6 @@ def check_tcp_connection(host: str, port: int, timeout: float = 3.0):
     Attempts to establish a TCP connection to a host and port, 
     measuring the time it takes.
     """
-    print("---CHECK TCP CONNECTION---")
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)
 
@@ -13,14 +12,20 @@ def check_tcp_connection(host: str, port: int, timeout: float = 3.0):
 
     try:
         sock.connect((host, port))
-        elapsed_time = (time.perf_counter() - start_time) * 1000
-        print(f"Connected to {host}:{port} in {elapsed_time:.2f} ms")
-        return True, elapsed_time
+        elapsed_time = (time.perf_counter() - start_time)
+        return {
+            "success": True, 
+            "duration": elapsed_time
+        }
     except socket.timeout:
-        print(f"Connection to {host}:{port} timed out after {timeout} seconds.")
-        return False, None
+        return {
+            "success": False, 
+            "message": f"Socket timeout after {timeout}s"
+        }
     except socket.error as e:
-        print(f"Connection to {host}:{port} failed: {e}")
-        return False, None
+        return {
+            "success": False,
+            "message": f"Socket error: {e}"
+        }
     finally:
         sock.close()

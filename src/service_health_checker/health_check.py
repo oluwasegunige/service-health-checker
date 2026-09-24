@@ -20,7 +20,13 @@ def health_check(
     else:
         error = dns_check_result["error"]
         logging.error(f"DNS check failed: {service} {error}")
-    print()
-    check_tcp_connection(service, 443)
+
+    tcp_check_result = check_tcp_connection(host=service, port=443)
+    if tcp_check_result["success"] == True:
+        duration = tcp_check_result["duration"]
+        logging.info(f"TCP check passed: {service} {duration:.2f}s")
+    else:
+        message = tcp_check_result["message"]
+        logging.error(f"TCP check failed: {service} {message}")
     print()
     

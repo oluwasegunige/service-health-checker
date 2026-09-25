@@ -17,10 +17,7 @@ def healthcheck(
     dns_check = check_dns(service=service)
     results["dns"] = dns_check.success
     if dns_check.success == True:
-        if dns_check.details is not None:
-            logger.info(f"DNS check passed: {service} {dns_check.details["ip_address"]} {dns_check.duration:.2f}s")
-        else:
-            logger.info(f"DNS check passed: {service} {dns_check.duration:.2f}s")
+        logger.info(f"DNS check passed: {service} {dns_check.duration:.2f}s")
     else:
         logger.error(f"DNS check failed: {service} {dns_check.duration:.2f}s {dns_check.error}")
 

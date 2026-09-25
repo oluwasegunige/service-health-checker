@@ -37,3 +37,8 @@ def health_check(
             logger.error(f"HTTP check failed: {service} {http_check.details['status_code']} {http_check.duration:.2f}s")
         else:
             logger.error(f"HTTP check failed: {service} {http_check.duration:.2f}s")
+
+    for v in results.values():
+        if v == False:
+            exit(1)
+    exit(0)

@@ -5,14 +5,23 @@ from .logging_config import logger
 from .dns_check import check_dns
 from .check_tcp_connection import check_tcp_connection
 from .make_http_request import make_http_request
+from .config import load_config
 
 def healthcheck(
-    service: Annotated[str, typer.Argument(help="The services to be checked")] = "",
+    service: Annotated[str, typer.Option(help="The services to be checked")] = "",
     port: Annotated[int, typer.Option(help="The port on which to attempt TCP connection")] = 443,
     timeout: Annotated[float, typer.Option(help="The timeout duration for the TCP check")] = 3.0,
-    healthurl: Annotated[str, typer.Option(help="The complete HTTP health check url")] = ""
+    healthurl: Annotated[str, typer.Option(help="The complete HTTP health check url")] = "",
+    configfile: Annotated[str, typer.Option(help="A YAML file containing service configurations")] = ""
 ):
     results = {}
+
+    if configfile:
+        config = load_config(config_path=configfile)
+        service = config.host
+        port = config.port
+        timeout = config.timeout
+        healthurl = config.healthurl
 
     dns_check = check_dns(service=service)
     results["dns"] = dns_check.success

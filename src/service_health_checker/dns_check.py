@@ -1,22 +1,30 @@
 import time, socket
 
-def dns_check(service):
+from .models import CheckResult
+
+def check_dns(service):
     """
     Attempts to perform a forward DNS lookup to a service, 
     measuring the time it takes.
     """
+    start_time = time.perf_counter()
     try:
-        start_time = time.perf_counter()
         ip_address = socket.gethostbyname(service)
         end_time = time.perf_counter()
         duration = (end_time - start_time)
-        return {
-            "success": True,
-            "ip_address": ip_address,
-            "duration": duration
-        }
+        return CheckResult(
+            service=service, 
+            check_type="dns", 
+            success=True, 
+            duration=duration,
+            details={"ip_address": ip_address})
+        
     except socket.gaierror as e:
-        return {
-            "success": False,
-            "error": e
-        }
+        duration = time.perf_counter() - start_time
+        return CheckResult(
+            service=service,
+            check_type="dns",
+            success=False,
+            duration=duration,
+            error=str(e)
+        )

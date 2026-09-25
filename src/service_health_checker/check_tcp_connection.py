@@ -1,5 +1,7 @@
 import time, socket
 
+from .models import CheckResult
+
 def check_tcp_connection(host: str, port: int, timeout: float = 3.0):
     """
     Attempts to establish a TCP connection to a host and port, 
@@ -13,19 +15,29 @@ def check_tcp_connection(host: str, port: int, timeout: float = 3.0):
     try:
         sock.connect((host, port))
         elapsed_time = (time.perf_counter() - start_time)
-        return {
-            "success": True, 
-            "duration": elapsed_time
-        }
+        CheckResult(
+            service=host,
+            check_type="tcp",
+            success=True,
+            duration=elapsed_time
+        )
     except socket.timeout:
-        return {
-            "success": False, 
-            "message": f"Socket timeout after {timeout}s"
-        }
+        CheckResult(
+            service=host,
+            check_type="tcp",
+            success=False,
+            duration=timeout,
+            error=f"Socket timeout after {timeout}s"
+        )
     except socket.error as e:
-        return {
-            "success": False,
-            "message": f"Socket error: {e}"
-        }
+        elapsed_time = (time.perf_counter() - start_time)
+        print(e)
+        CheckResult(
+            service=host,
+            check_type="tcp",
+            success=False,
+            duration=elapsed_time,
+            error=f"Socket error: {str(e)}"
+        )
     finally:
         sock.close()

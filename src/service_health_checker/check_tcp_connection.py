@@ -2,7 +2,7 @@ import time, socket
 
 from .models import CheckResult
 
-def check_tcp_connection(host: str, port: int, timeout: float = 3.0):
+def check_tcp_connection(host: str, port: int, timeout: float):
     """
     Attempts to establish a TCP connection to a host and port, 
     measuring the time it takes.

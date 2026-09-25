@@ -8,8 +8,9 @@ version = "0.1.0"
 dependencies = [
     "typer",
     "typing_extensions",
-    "requests"
+    "requests",
+    "pyyaml"
 ]
 
 [project.scripts]
-health_check = "service_health_checker.cli:app"
+healthcheck = "service_health_checker.cli:app"

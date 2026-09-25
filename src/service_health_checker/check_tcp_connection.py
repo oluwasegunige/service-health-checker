@@ -29,7 +29,6 @@ def check_tcp_connection(host: str, port: int, timeout: float):
         )
     except socket.error as e:
         elapsed_time = (time.perf_counter() - start_time)
-        print(e)
         return CheckResult(
             check_type="tcp",
             success=False,

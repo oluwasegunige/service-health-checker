@@ -2,12 +2,12 @@ import time, requests
 
 from .models import CheckResult
 
-def make_http_request(service: str):
+def make_http_request(service: str, endpoint: str):
     """
     Attempts to make an HTTP GET request to a service, 
     measuring the time it takes.
     """
-    url = "https://" + service
+    url = "https://" + service + endpoint
     
     start_time = time.perf_counter()
     response = requests.get(url)

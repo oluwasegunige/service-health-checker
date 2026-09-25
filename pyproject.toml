@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "service_health_checker"
+version = "0.1.0"
+dependencies = [
+    "typer",
+    "typing_extensions",
+    "requests"
+]
+
+[project.scripts]
+health_check = "service_health_checker.cli:app"

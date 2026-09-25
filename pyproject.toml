@@ -12,4 +12,4 @@ dependencies = [
 ]
 
 [project.scripts]
-health_check = "service_health_checker.cli:app"
+healthcheck = "service_health_checker.cli:app"

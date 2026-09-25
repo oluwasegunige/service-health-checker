@@ -15,15 +15,13 @@ def check_tcp_connection(host: str, port: int, timeout: float = 3.0):
     try:
         sock.connect((host, port))
         elapsed_time = (time.perf_counter() - start_time)
-        CheckResult(
-            service=host,
+        return CheckResult(
             check_type="tcp",
             success=True,
             duration=elapsed_time
         )
     except socket.timeout:
-        CheckResult(
-            service=host,
+        return CheckResult(
             check_type="tcp",
             success=False,
             duration=timeout,
@@ -32,8 +30,7 @@ def check_tcp_connection(host: str, port: int, timeout: float = 3.0):
     except socket.error as e:
         elapsed_time = (time.perf_counter() - start_time)
         print(e)
-        CheckResult(
-            service=host,
+        return CheckResult(
             check_type="tcp",
             success=False,
             duration=elapsed_time,

@@ -15,15 +15,13 @@ def make_http_request(service: str):
     status_code = response.status_code
 
     if status_code == 200:
-        CheckResult(
-            service=service,
+        return CheckResult(
             check_type="http",
             success=True,
             duration=elapsed_time
         )
     else:
-        CheckResult(
-            service=service,
+        return CheckResult(
             check_type="http",
             success=False,
             duration=elapsed_time,

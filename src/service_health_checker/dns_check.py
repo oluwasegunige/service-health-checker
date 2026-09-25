@@ -12,8 +12,7 @@ def check_dns(service):
         ip_address = socket.gethostbyname(service)
         end_time = time.perf_counter()
         duration = (end_time - start_time)
-        return CheckResult(
-            service=service, 
+        return CheckResult( 
             check_type="dns", 
             success=True, 
             duration=duration,
@@ -22,7 +21,6 @@ def check_dns(service):
     except socket.gaierror as e:
         duration = time.perf_counter() - start_time
         return CheckResult(
-            service=service,
             check_type="dns",
             success=False,
             duration=duration,

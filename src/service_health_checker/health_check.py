@@ -7,7 +7,10 @@ from .check_tcp_connection import check_tcp_connection
 from .make_http_request import make_http_request
 
 def health_check(
-    service: Annotated[str, typer.Argument(help="The services to be checked")] = ""
+    service: Annotated[str, typer.Argument(help="The services to be checked")] = "",
+    port: Annotated[int, typer.Option(help="The port on which to attempt TCP connection")] = 443,
+    timeout: Annotated[float, typer.Option(help="The timeout duration for the TCP check")] = 3.0,
+    endpoint: Annotated[str, typer.Option(help="The HTTP health check endpoint e.g /health")] = "/"
 ):
     results = {}
 
@@ -21,14 +24,14 @@ def health_check(
     else:
         logger.error(f"DNS check failed: {service} {dns_check.duration:.2f}s {dns_check.error}")
 
-    tcp_check = check_tcp_connection(host=service, port=443)
+    tcp_check = check_tcp_connection(host=service, port=port, timeout=timeout)
     results["tcp"] = tcp_check.success
     if tcp_check.success == True:
         logger.info(f"TCP check passed: {service} {tcp_check.duration:.2f}s")
     else:
         logger.error(f"TCP check failed: {service} {tcp_check.duration:.2f}s {tcp_check.error}")
     
-    http_check = make_http_request(service=service)
+    http_check = make_http_request(service=service, endpoint=endpoint)
     results["http"] = http_check.success
     if http_check.success == True:
         logger.info(f"HTTP check passed: {service} 200 {http_check.duration:.2f}s")

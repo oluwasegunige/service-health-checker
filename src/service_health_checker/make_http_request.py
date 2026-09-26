@@ -1,6 +1,7 @@
 import time, requests
 
 from .models import CheckResult
+from .logging_config import logger
 
 def make_http_request(service: str, healthurl: str):
     """
@@ -8,6 +9,9 @@ def make_http_request(service: str, healthurl: str):
     measuring the time it takes.
     """
     if not healthurl:
+        if not service:
+            logger.error("Service/health URL is required for HTTP check.")
+            exit(1)
         url = "https://" + service
     else:
         url = healthurl

@@ -1,7 +1,7 @@
 import logging
 
 logger = logging.getLogger("health_check_logger")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 formatter.datefmt = '%Y-%m-%d %H:%M:%S'

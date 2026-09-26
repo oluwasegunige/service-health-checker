@@ -22,7 +22,7 @@ def load_config(config_path):
 
             host = config_file.get("host")
             if not host:
-                logger.warning("Host is required.")
+                logger.error("Host is required.")
                 exit(1)
 
             tcp_config = config_file.get("tcp")
@@ -49,5 +49,5 @@ def load_config(config_path):
                 retries=retries)
             return service_config
     except FileNotFoundError:
-        logger.warning(f"Configuration file {config_path} not found.")
+        logger.error(f"Configuration file {config_path} not found.")
         exit(1)

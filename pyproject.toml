@@ -12,5 +12,11 @@ dependencies = [
     "pyyaml"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "requests-mock>1.12"
+]
+
 [project.scripts]
 healthcheck = "service_health_checker.cli:app"

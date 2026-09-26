@@ -1,9 +1,6 @@
-import pytest, sys
-
-import yaml
+import pytest, yaml
 
 from src.service_health_checker.config import load_config, ServiceConfig
-from src.service_health_checker.logging_config import logging
 
 def test_load_config_with_all_values():
     yaml_file = "tests/test_config.yaml"

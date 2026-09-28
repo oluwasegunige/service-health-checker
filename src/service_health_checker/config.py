@@ -11,6 +11,9 @@ class ServiceConfig:
         self.healthurl = healthurl
         self.retries = retries
 
+class ConfigError(Exception):
+    pass
+
 def load_config(config_path):
     tcp_timeout = 3
     tcp_port = 443
@@ -29,11 +32,11 @@ def load_config(config_path):
             for item in tcp_config or []:
                 if "timeout" in item:
                     tcp_timeout = item.get("timeout")
-                    if not isinstance(tcp_timeout, int) or tcp_port < 0:
-                        logger.error("Invalid port in config file")
-                        exit(1)
                 if "port" in item:
-                    tcp_port = item.get("port")           
+                    tcp_port = item.get("port")
+                    if not isinstance(tcp_port, int):
+                        logger.error(f"Expected an int, but got {type(tcp_port).__name__}")
+                        raise ConfigError(f"Expected an int, but got {type(tcp_port).__name__}")
                     
             healthurl = config_file.get("healthurl")
             if not healthurl:

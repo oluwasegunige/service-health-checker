@@ -1,6 +1,6 @@
 import pytest, yaml
 
-from src.service_health_checker.config import load_config, ServiceConfig
+from src.service_health_checker.config import load_config, ServiceConfig, ConfigError
 
 def test_load_config_with_all_values():
     yaml_file = "tests/test_config.yaml"
@@ -221,6 +221,32 @@ def test_load_config_with_no_tcp():
     result = load_config(yaml_file)
     assert result.timeout == 3
     assert result.port == 443
+
+def test_load_config_with_tcp_port_str():
+    tcp_port = "banana"
+    yaml_file = "tests/test_config.yaml"
+
+    yaml_content = {
+        "name": "example",
+        "host": "example.com",
+        "tcp": [
+            {"port": tcp_port},
+            {"timeout": 3}
+        ],
+        "healthurl": "https://example.com/v1/health",
+        "retries": 2
+    }
+
+    with open(yaml_file, "w") as file:
+        yaml.dump(
+            yaml_content, file, default_flow_style=False, sort_keys=False)
+    
+    with pytest.raises(
+        ConfigError, 
+        match=f"Expected an int, but got {type(tcp_port).__name__}"
+    ) as load_config_with_tcp_port_str:
+        load_config(yaml_file)
+    assert str(load_config_with_tcp_port_str.value) == f"Expected an int, but got {type(tcp_port).__name__}"
 
 
 def test_load_config_with_file_not_exists(caplog):

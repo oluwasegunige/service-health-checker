@@ -24,31 +24,54 @@ def test_check_tcp_connection_with_monkeypatch(monkeypatch):
     assert result.duration >= 0
 
 
-def test_check_tcp_connection_with_host_empty(caplog):
-    with pytest.raises(SystemExit) as failed_tcp_check:
+def test_check_tcp_connection_with_host_empty():
+    with pytest.raises(
+        ValueError, 
+        match="Hostname is required"
+    ) as failed_tcp_check:
         result = check_tcp_connection("", 80, 5)
-    assert failed_tcp_check.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Host is required for TCP check." in caplog.text
+
+    assert str(failed_tcp_check.value) == "Hostname is required"
 
 
-def test_check_tcp_connection_with_timeout_0(caplog):
-    with pytest.raises(SystemExit) as failed_tcp_check:
+def test_check_tcp_connection_with_port_0():
+    with pytest.raises(
+        ValueError, 
+        match="Port must be greater than zero"
+    ) as failed_tcp_check:
+        result = check_tcp_connection("example.com", 0, 3)
+
+    assert str(failed_tcp_check.value) == "Port must be greater than zero"
+
+
+def test_check_tcp_connection_with_port_lte_0():
+    with pytest.raises(
+        ValueError, 
+        match="Port must be greater than zero"
+    ) as failed_tcp_check:
+        result = check_tcp_connection("example.com", -80, 2)
+
+    assert str(failed_tcp_check.value) == "Port must be greater than zero"
+
+
+def test_check_tcp_connection_with_timeout_0():
+    with pytest.raises(
+        ValueError, 
+        match="Timeout must be greater than zero"
+    ) as failed_tcp_check:
         result = check_tcp_connection("example.com", 80, 0)
-    assert failed_tcp_check.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Timeout is required for TCP check and must be greater than 0." in caplog.text
+
+    assert str(failed_tcp_check.value) == "Timeout must be greater than zero"
 
 
-def test_check_tcp_connection_with_timeout_lte_0(caplog):
-    with pytest.raises(SystemExit) as failed_tcp_check:
+def test_check_tcp_connection_with_timeout_lte_0():
+    with pytest.raises(
+        ValueError, 
+        match="Timeout must be greater than zero"
+    ) as failed_tcp_check:
         result = check_tcp_connection("example.com", 80, -2)
-    assert failed_tcp_check.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Timeout is required for TCP check and must be greater than 0." in caplog.text
+
+    assert str(failed_tcp_check.value) == "Timeout must be greater than zero"
 
 
 def test_check_tcp_connection_with_monkeypatch_timeout_exceeded(monkeypatch):

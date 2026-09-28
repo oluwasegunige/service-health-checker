@@ -1,9 +1,9 @@
 import typer
 
-from .health_check import health_check
+from .health_check import healthcheck
 
 app = typer.Typer()
-app.command()(health_check)
+app.command()(healthcheck)
 
 if __name__ == "__main__":
     app()

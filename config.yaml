@@ -1,0 +1,7 @@
+name: aisenseapi
+host: aisenseapi.com
+tcp:
+- port: 443
+- timeout: 3
+healthurl: https://aisenseapi.com/services/v1/health
+retries: 2

@@ -4,20 +4,25 @@ build-backend = "hatchling.build"
 
 [project]
 name = "service_health_checker"
-version = "0.1.0"
+version = "1.0.0"
+description = "A service health monitoring CLI"
+requires-python = ">=3.13"
 dependencies = [
-    "typer",
-    "typing_extensions",
-    "requests",
-    "pyyaml"
+    "typer>=0.27.2",
+    "typing_extensions>=4.16",
+    "requests>=2.34.2",
+    "pyyaml>=6.0.3"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "requests-mock>1.12",
-    "pytest-mock>3.15"
+    "pytest>=9.1.1",
+    "requests-mock>1.12.1",
+    "pytest-mock>3.15.1"
 ]
 
 [project.scripts]
 healthcheck = "service_health_checker.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/service_health_checker"]

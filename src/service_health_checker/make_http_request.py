@@ -1,17 +1,15 @@
 import time, requests
 
 from .models import CheckResult
-from .logging_config import logger
 
 def make_http_request(service: str, healthurl: str):
     """
     Attempts to make an HTTP GET request to a service, 
     measuring the time it takes.
     """
-    if not healthurl:
-        if not service:
-            logger.error("Service/health URL is required for HTTP check.")
-            exit(1)
+    if healthurl == "":
+        if service == "":
+            raise ValueError("Service/health URL is required for HTTP check.")
         url = "https://" + service
     else:
         url = healthurl

@@ -26,14 +26,14 @@ def test_make_http_request_service_only(requests_mock):
     assert result.duration >= 0
 
 
-def test_make_http_request_service_healthurl_empty(caplog):
-    with pytest.raises(SystemExit) as failed_http_check:
+def test_make_http_request_service_healthurl_empty():
+    with pytest.raises(
+        ValueError, 
+        match="Service/health URL is required for HTTP check."
+    ) as failed_http_check:
         result = make_http_request("", "")
 
-    assert failed_http_check.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Service/health URL is required for HTTP check." in caplog.text
+    assert str(failed_http_check.value) == "Service/health URL is required for HTTP check."
 
 
 def test_make_http_request_404(requests_mock):

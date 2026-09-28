@@ -153,7 +153,7 @@ def test_load_config_with_retries_omitted():
     assert result.retries == 2
 
 
-def test_load_config_with_host_omitted(caplog):
+def test_load_config_with_host_omitted():
     yaml_file = "tests/test_config.yaml"
 
     yaml_content = {
@@ -170,15 +170,13 @@ def test_load_config_with_host_omitted(caplog):
         yaml.dump(
             yaml_content, file, default_flow_style=False, sort_keys=False)
 
-    with pytest.raises(SystemExit) as failed_load:
+    with pytest.raises(ConfigError) as failed_load:
         load_config(yaml_file)
-    assert failed_load.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Host is required." in caplog.text
+
+    assert str(failed_load.value) == "Host not provided"
 
 
-def test_load_config_with_host_empty(caplog):
+def test_load_config_with_host_empty():
     yaml_file = "tests/test_config.yaml"
 
     yaml_content = {
@@ -196,12 +194,10 @@ def test_load_config_with_host_empty(caplog):
         yaml.dump(
             yaml_content, file, default_flow_style=False, sort_keys=False)
 
-    with pytest.raises(SystemExit) as failed_load:
+    with pytest.raises(ConfigError) as failed_load:
         load_config(yaml_file)
-    assert failed_load.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Host is required." in caplog.text
+
+    assert str(failed_load.value) == "Host not provided"
 
 
 def test_load_config_with_no_tcp():
@@ -249,7 +245,7 @@ def test_load_config_with_tcp_port_str():
     assert str(load_config_with_tcp_port_str.value) == f"Expected an int, but got {type(tcp_port).__name__}"
 
 
-def test_load_config_with_file_not_exists(caplog):
+def test_load_config_with_file_not_exists():
     yaml_file = "tests/test_config.yaml"
 
     yaml_content = {
@@ -269,15 +265,13 @@ def test_load_config_with_file_not_exists(caplog):
 
     wrong_file = "tests/nofile.yaml"
     
-    with pytest.raises(SystemExit) as failed_load:
+    with pytest.raises(ConfigError) as failed_load:
         load_config(wrong_file)
-    assert failed_load.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert f"Configuration file {wrong_file} not found." in caplog.text
+
+    assert str(failed_load.value) == f"Configuration file {wrong_file} not found."
 
 
-def test_load_config_with_empty_file(caplog):
+def test_load_config_with_empty_file():
     yaml_file = "tests/test_config.yaml"
 
     yaml_content = {}
@@ -285,11 +279,9 @@ def test_load_config_with_empty_file(caplog):
     with open(yaml_file, "w") as file:
         yaml.dump(
             yaml_content, file, default_flow_style=False, sort_keys=False)
-    
-    with pytest.raises(SystemExit) as failed_load:
+
+    with pytest.raises(ConfigError) as failed_load:
         load_config(yaml_file)
-    assert failed_load.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Host is required." in caplog.text
+
+    assert str(failed_load.value) == "Host not provided"
 

@@ -25,8 +25,7 @@ def load_config(config_path):
 
             host = config_file.get("host")
             if not host:
-                logger.error("Host is required.")
-                exit(1)
+                raise ConfigError("Host not provided")
 
             tcp_config = config_file.get("tcp")
             for item in tcp_config or []:
@@ -35,7 +34,6 @@ def load_config(config_path):
                 if "port" in item:
                     tcp_port = item.get("port")
                     if not isinstance(tcp_port, int):
-                        logger.error(f"Expected an int, but got {type(tcp_port).__name__}")
                         raise ConfigError(f"Expected an int, but got {type(tcp_port).__name__}")
                     
             healthurl = config_file.get("healthurl")
@@ -55,5 +53,4 @@ def load_config(config_path):
                 retries=retries)
             return service_config
     except FileNotFoundError:
-        logger.error(f"Configuration file {config_path} not found.")
-        exit(1)
+        raise ConfigError(f"Configuration file {config_path} not found.")

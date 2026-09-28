@@ -16,12 +16,23 @@ def get_delay(x: int):
     return jittered_delay
 
 def healthcheck(
-    service: Annotated[str, typer.Option(help="The services to be checked")] = "",
-    port: Annotated[int, typer.Option(help="The port on which to attempt TCP connection")] = 443,
-    timeout: Annotated[float, typer.Option(help="The timeout duration for the TCP check")] = 3.0,
-    healthurl: Annotated[str, typer.Option(help="The complete HTTP health check url")] = "",
-    retries: Annotated[int, typer.Option(help="How many times should each check be retried in case of a failure")] = 2,
-    configfile: Annotated[str, typer.Option(help="A YAML file containing service configurations")] = ""
+    service: Annotated[
+        str, typer.Option(help="The services to be checked")] = "",
+    port: Annotated[
+        int, 
+        typer.Option(help="The port on which to attempt TCP connection")] = 443,
+    timeout: Annotated[
+        float, 
+        typer.Option(help="The timeout duration for the TCP check")] = 3.0,
+    healthurl: Annotated[
+        str, 
+        typer.Option(help="The complete HTTP health check url")] = "",
+    retries: Annotated[
+        int, 
+        typer.Option(help="How many times should each check be retried in case of a failure")] = 2,
+    configfile: Annotated[
+        str, 
+        typer.Option(help="A YAML file containing service configurations")] = ""
 ):
     results = {}
 

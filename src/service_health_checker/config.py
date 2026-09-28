@@ -1,7 +1,5 @@
 import yaml
 
-from .logging_config import logger
-
 class ServiceConfig:
     def __init__(self, name, host, port, timeout, healthurl, retries) -> None:
         self.name = name

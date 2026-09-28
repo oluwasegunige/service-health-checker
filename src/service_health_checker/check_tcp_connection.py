@@ -1,7 +1,6 @@
 import time, socket
 
 from .models import CheckResult
-from .logging_config import logger
 
 def check_tcp_connection(host: str, port: int, timeout: float):
     """

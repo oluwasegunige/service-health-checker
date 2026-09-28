@@ -28,12 +28,13 @@ def test_failed_check_dns_with_monkeypatch(monkeypatch):
     assert result.check_type == "dns"
     assert result.success == False
 
-def test_check_dns_empty_service(caplog):
-    with pytest.raises(SystemExit) as failed_dns_check:
+def test_check_dns_empty_service():
+    with pytest.raises(
+        ValueError, 
+        match="Hostname is required"
+    ) as failed_dns_check:
         result = check_dns("")
-    assert failed_dns_check.value.code == 1
-    assert len(caplog.records) == 1
-    assert caplog.records[0].levelname == "ERROR"
-    assert "Host is required." in caplog.text
+
+    assert str(failed_dns_check.value) == "Hostname is required"
 
     

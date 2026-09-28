@@ -1,0 +1,6 @@
+services:
+  healthcheck:
+    image: healthcheck
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      

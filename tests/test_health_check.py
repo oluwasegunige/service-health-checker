@@ -1,11 +1,8 @@
 import pytest
 
 from src.service_health_checker.health_check import get_delay, healthcheck
-from src.service_health_checker import health_check
-from src.service_health_checker.dns_check import check_dns
 from src.service_health_checker.models import CheckResult
-from src.service_health_checker.logging_config import logger
-from src.service_health_checker.config import load_config
+from src.service_health_checker.config import ServiceConfig
 
 def test_get_delay_x_2(monkeypatch):
     x = 2
@@ -417,3 +414,57 @@ def test_health_check_http_500_fail_thrice_default_max(mocker):
     assert mock_sleep.call_count == 2
     assert mock_get_delay.call_count == 2
     assert mock_make_http_request.call_count == 3
+
+
+def test_health_check_with_config(mocker):
+    expected_name = "example"
+    expected_host = "example.com"
+    expected_port = 80
+    expected_timeout = 5
+    expected_healthurl = "https://example.com"
+    expected_retries = 3
+
+    mock_load_config = mocker.patch(
+        "src.service_health_checker.health_check.load_config",
+        return_value=ServiceConfig(
+            name=expected_name, 
+            host=expected_host, 
+            port=expected_port, 
+            timeout=expected_timeout, 
+            healthurl=expected_healthurl, 
+            retries=expected_retries))
+
+    mock_dns_check = mocker.patch(
+        "src.service_health_checker.health_check.check_dns",
+        return_value=CheckResult(
+            check_type="dns", success=True, duration=0.01))
+
+    mock_check_tcp_connection = mocker.patch(
+        "src.service_health_checker.health_check.check_tcp_connection",
+        return_value=CheckResult(
+            check_type="tcp", success=True, duration=0.19))
+
+    mock_make_http_request = mocker.patch(
+        "src.service_health_checker.health_check.make_http_request",
+        return_value=CheckResult(
+            check_type="http", success=True, duration=1.5))
+
+    with pytest.raises(SystemExit) as health_check_with_config:
+        healthcheck(
+            service="google.com", 
+            port=443, 
+            timeout=3, 
+            healthurl="https://google.com", 
+            retries=2, 
+            configfile="tests/test_config.yaml")
+
+    mock_load_config.assert_called_once_with(
+        config_path="tests/test_config.yaml")
+    mock_dns_check.assert_called_once_with(service=expected_host)
+    mock_check_tcp_connection.assert_called_once_with(
+        host=expected_host, port=expected_port, timeout=expected_timeout)
+    mock_make_http_request.assert_called_once_with(
+        service=expected_host, healthurl=expected_healthurl)
+    assert health_check_with_config.value.code == 0
+
+    

@@ -49,7 +49,7 @@ def healthcheck(
     if dns_check.success == True:
         logger.info(f"DNS check passed: {service} {dns_check.duration:.2f}s")
     else:
-        logger.error(f"DNS check failed: {service} {dns_check.duration:.2f}s {dns_check.error}")
+        logger.warning(f"DNS check failed: {service} {dns_check.duration:.2f}s {dns_check.error}")
         for x in range(retries):
             delay = get_delay(x)
             time.sleep(delay)
@@ -59,14 +59,14 @@ def healthcheck(
             if dns_check.success == True:
                 logger.info(f"DNS check passed: {service} {dns_check.duration:.2f}s after {x+1} retries")
                 break
-            logger.error(f"DNS check failed: {service} {dns_check.duration:.2f}s {dns_check.error} after {x+1} retries")
+            logger.warning(f"DNS check failed: {service} {dns_check.duration:.2f}s {dns_check.error} after {x+1} retries")
 
     tcp_check = check_tcp_connection(host=service, port=port, timeout=timeout)
     results["tcp"] = tcp_check.success
     if tcp_check.success == True:
         logger.info(f"TCP check passed: {service} {tcp_check.duration:.2f}s")
     else:
-        logger.error(f"TCP check failed: {service} {tcp_check.duration:.2f}s {tcp_check.error}")
+        logger.warning(f"TCP check failed: {service} {tcp_check.duration:.2f}s {tcp_check.error}")
 
         for x in range(retries):
             delay = get_delay(x)
@@ -77,7 +77,7 @@ def healthcheck(
             if tcp_check.success == True:
                 logger.info(f"TCP check passed: {service} {tcp_check.duration:.2f}s after {x+1} retries")
                 break
-            logger.error(f"TCP check failed: {service} {tcp_check.duration:.2f}s {tcp_check.error} after {x+1} retries")
+            logger.warning(f"TCP check failed: {service} {tcp_check.duration:.2f}s {tcp_check.error} after {x+1} retries")
     
     http_check = make_http_request(service=service, healthurl=healthurl)
     results["http"] = http_check.success
@@ -85,7 +85,7 @@ def healthcheck(
         logger.info(f"HTTP check passed: {service} 200 {http_check.duration:.2f}s")
     else:
         if http_check.details is not None:
-            logger.error(f"HTTP check failed: {service} {http_check.details['status_code']} {http_check.duration:.2f}s")
+            logger.warning(f"HTTP check failed: {service} {http_check.details['status_code']} {http_check.duration:.2f}s")
             if http_check.details['status_code'] >= 500:
                 for x in range(retries):
                     delay = get_delay(x)
@@ -97,9 +97,9 @@ def healthcheck(
                         break
 
                     if http_check.details is not None:
-                        logger.error(f"HTTP check failed: {service} {http_check.details['status_code']} {http_check.duration:.2f}s after {x+1} retries")
+                        logger.warning(f"HTTP check failed: {service} {http_check.details['status_code']} {http_check.duration:.2f}s after {x+1} retries")
                     else:
-                        logger.error(f"HTTP check failed: {service} {http_check.duration:.2f}s after {x+1} retries")
+                        logger.warning(f"HTTP check failed: {service} {http_check.duration:.2f}s after {x+1} retries")
 
     for v in results.values():
         if v == False:

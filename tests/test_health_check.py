@@ -163,7 +163,8 @@ def test_health_check_tcp_immediate_success(mocker):
 
     assert health_check_tcp_immediate_success.value.code == 0
     mock_dns_check.assert_called()
-    mock_check_tcp_connection.assert_called_once_with(service="example.com")
+    mock_check_tcp_connection.assert_called_once_with(
+        host="example.com", port=80, timeout=5)
     mock_sleep.assert_not_called()
     mock_make_http_request.assert_called()
 
@@ -255,3 +256,164 @@ def test_health_check_tcp_fail_thrice_default_max(mocker):
     assert mock_sleep.call_count == 2
     assert mock_get_delay.call_count == 2
     mock_make_http_request.assert_called()
+
+
+def test_health_check_http_immediate_success(mocker):
+    mock_sleep = mocker.patch("time.sleep")
+
+    mock_dns_check = mocker.patch(
+        "src.service_health_checker.health_check.check_dns",
+        return_value=CheckResult(
+            check_type="dns", success=True, duration=0.01))
+
+    mock_check_tcp_connection = mocker.patch(
+        "src.service_health_checker.health_check.check_tcp_connection",
+        return_value=CheckResult(
+            check_type="tcp", success=True, duration=0.19))
+
+    mock_make_http_request = mocker.patch(
+        "src.service_health_checker.health_check.make_http_request",
+        return_value=CheckResult(
+            check_type="http", success=True, duration=1.5))
+
+    with pytest.raises(SystemExit) as health_check_http_immediate_success:
+        healthcheck(
+            service="example.com", 
+            port=80, 
+            timeout=5, 
+            healthurl="https://example.com")
+
+    assert health_check_http_immediate_success.value.code == 0
+    mock_dns_check.assert_called()
+    mock_check_tcp_connection.assert_called()
+    mock_sleep.assert_not_called()
+    mock_make_http_request.assert_called_once_with(
+        service="example.com", healthurl="https://example.com")
+
+
+def test_health_check_http_404_failure(mocker):
+    mock_sleep = mocker.patch("time.sleep")
+
+    mock_dns_check = mocker.patch(
+        "src.service_health_checker.health_check.check_dns",
+        return_value=CheckResult(
+            check_type="dns", success=True, duration=0.01))
+
+    mock_check_tcp_connection = mocker.patch(
+        "src.service_health_checker.health_check.check_tcp_connection",
+        return_value=CheckResult(
+            check_type="tcp", success=True, duration=0.19))
+
+    mock_make_http_request = mocker.patch(
+        "src.service_health_checker.health_check.make_http_request",
+        return_value=CheckResult(
+            check_type="http", 
+            success=False, 
+            duration=1.5, 
+            details={"status_code": 404}))
+
+    with pytest.raises(SystemExit) as health_check_http_404_failure:
+        healthcheck(
+            service="example.com", 
+            port=80, 
+            timeout=5, 
+            healthurl="https://example.com")
+
+    assert health_check_http_404_failure.value.code == 1
+    mock_dns_check.assert_called()
+    mock_check_tcp_connection.assert_called()
+    mock_sleep.assert_not_called()
+    mock_make_http_request.assert_called_once_with(
+        service="example.com", healthurl="https://example.com")
+
+
+def test_health_check_http_500_fail_once(mocker):
+    mock_sleep = mocker.patch("time.sleep")
+    mock_get_delay = mocker.patch(
+        "src.service_health_checker.health_check.get_delay")
+
+    mock_dns_check = mocker.patch(
+        "src.service_health_checker.health_check.check_dns",
+        return_value=CheckResult(
+            check_type="dns", success=True, duration=0.01))
+
+    mock_check_tcp_connection = mocker.patch(
+        "src.service_health_checker.health_check.check_tcp_connection",
+        return_value=CheckResult(
+            check_type="tcp", success=True, duration=0.19))
+
+    mock_make_http_request = mocker.patch(
+        "src.service_health_checker.health_check.make_http_request",
+        side_effect=[
+            CheckResult(
+                check_type="http", 
+                success=False, 
+                duration=1.5, 
+                details={"status_code": 500}),
+            CheckResult(
+                check_type="http", 
+                success=True, 
+                duration=1.5)])
+
+    with pytest.raises(SystemExit) as health_check_http_500_fail_once:
+        healthcheck(
+            service="example.com", 
+            port=80, 
+            timeout=5, 
+            healthurl="https://example.com")
+
+    assert health_check_http_500_fail_once.value.code == 0
+    mock_dns_check.assert_called()
+    mock_check_tcp_connection.assert_called()
+    mock_sleep.assert_called_once()
+    mock_get_delay.assert_called_once()
+    assert mock_make_http_request.call_count == 2
+
+
+def test_health_check_http_500_fail_thrice_default_max(mocker):
+    mock_sleep = mocker.patch("time.sleep")
+    mock_get_delay = mocker.patch(
+        "src.service_health_checker.health_check.get_delay")
+
+    mock_dns_check = mocker.patch(
+        "src.service_health_checker.health_check.check_dns",
+        return_value=CheckResult(
+            check_type="dns", success=True, duration=0.01))
+
+    mock_check_tcp_connection = mocker.patch(
+        "src.service_health_checker.health_check.check_tcp_connection",
+        return_value=CheckResult(
+            check_type="tcp", success=True, duration=0.19))
+
+    mock_make_http_request = mocker.patch(
+        "src.service_health_checker.health_check.make_http_request",
+        side_effect=[
+            CheckResult(
+                check_type="http", 
+                success=False, 
+                duration=1.5, 
+                details={"status_code": 500}),
+            CheckResult(
+                check_type="http", 
+                success=False, 
+                duration=1.5, 
+                details={"status_code": 500}),
+            CheckResult(
+                check_type="http", 
+                success=False, 
+                duration=1.5, 
+                details={"status_code": 500})])
+
+    with pytest.raises(SystemExit) as health_check_http_500_fail_thrice_default_max:
+        healthcheck(
+            service="example.com", 
+            port=80, 
+            timeout=5, 
+            healthurl="https://example.com")
+
+    assert health_check_http_500_fail_thrice_default_max.value.code == 1
+    mock_dns_check.assert_called()
+    mock_check_tcp_connection.assert_called()
+    assert mock_sleep.call_count == 2
+    assert mock_get_delay.call_count == 2
+    assert mock_make_http_request.call_count == 3

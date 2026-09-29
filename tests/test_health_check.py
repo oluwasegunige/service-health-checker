@@ -46,6 +46,19 @@ def test_health_check_happy(mocker):
     mock_make_http_request.assert_called_once_with(
         service="example.com", healthurl="https://example.com")
 
+
+def test_health_check_service_empty(caplog):
+    health_check_service_empty = healthcheck(
+        service="", 
+        port=443, 
+        timeout=3, 
+        healthurl="https://example.com",
+        retries=2)
+
+    assert len(caplog.records) == 1
+    assert "Unexpected value: Host cannot be empty" in caplog.messages
+
+
 def test_health_check_dns_immediate_success(mocker):
     mock_sleep = mocker.patch("time.sleep")
 

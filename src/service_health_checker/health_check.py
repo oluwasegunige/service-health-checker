@@ -45,6 +45,9 @@ def healthcheck(
             healthurl = config.healthurl
             retries = config.retries
 
+        if service == "":
+            raise ValueError("Host cannot be empty")
+
         dns_check = check_dns(service=service)
         results["dns"] = dns_check.success
         if dns_check.success == True:

@@ -71,6 +71,18 @@ def test_health_check_port_lt1(caplog):
     assert "Unexpected value: Port must be an integer in the valid TCP port range (1–65535)" in caplog.messages
 
 
+def test_health_check_port_gt65535(caplog):
+    health_check_port_gt65535 = healthcheck(
+        service="example.com", 
+        port=65536, 
+        timeout=3, 
+        healthurl="https://example.com",
+        retries=2)
+
+    assert len(caplog.records) == 1
+    assert "Unexpected value: Port must be an integer in the valid TCP port range (1–65535)" in caplog.messages
+
+
 def test_health_check_dns_immediate_success(mocker):
     mock_sleep = mocker.patch("time.sleep")
 

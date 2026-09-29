@@ -6,6 +6,7 @@ from .dns_check import check_dns
 from .check_tcp_connection import check_tcp_connection
 from .make_http_request import make_http_request
 from .config import load_config, ConfigError
+from .is_valid_uri import is_valid_uri
 
 def get_delay(x: int):
     delay = 2 ** x

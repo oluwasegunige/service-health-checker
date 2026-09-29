@@ -1,6 +1,7 @@
 import time, requests
 
 from .models import CheckResult
+from .is_valid_uri import is_valid_uri
 
 def make_http_request(service: str, healthurl: str):
     """
@@ -13,6 +14,9 @@ def make_http_request(service: str, healthurl: str):
         url = "https://" + service
     else:
         url = healthurl
+
+    if not is_valid_uri(healthurl):
+        raise ValueError("HealthURL is not a valid URI")
     
     start_time = time.perf_counter()
     response = requests.get(url)

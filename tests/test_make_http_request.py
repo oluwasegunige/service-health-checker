@@ -36,6 +36,16 @@ def test_make_http_request_service_healthurl_empty():
     assert str(failed_http_check.value) == "Service/health URL is required for HTTP check."
 
 
+def test_make_http_request_service_invalid_healthurl():
+    with pytest.raises(
+        ValueError, 
+        match="HealthURL is not a valid URI"
+    ) as failed_http_check:
+        result = make_http_request("example.com", "example.com")
+
+    assert str(failed_http_check.value) == "HealthURL is not a valid URI"
+
+
 def test_make_http_request_404(requests_mock):
     url = "https://example.com"
     status_code = 404

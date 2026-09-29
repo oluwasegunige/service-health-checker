@@ -50,6 +50,9 @@ def healthcheck(
 
         if port < 1 or port > 65535:
             raise ValueError("Port must be an integer in the valid TCP port range (1–65535)")
+        
+        if timeout <= 0:
+            raise ValueError("Timeout must be greater than zero")
 
         dns_check = check_dns(service=service)
         results["dns"] = dns_check.success

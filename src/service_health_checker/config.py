@@ -29,6 +29,10 @@ def load_config(config_path):
             for item in tcp_config or []:
                 if "timeout" in item:
                     tcp_timeout = item.get("timeout")
+                    if not isinstance(tcp_timeout, float) and not isinstance(tcp_timeout, int):
+                        raise ConfigError(f"Expected a number as timeout, but got {type(tcp_timeout).__name__}")
+                    if tcp_timeout < 1:
+                        raise ConfigError("Timeout must be a positive number")
                 if "port" in item:
                     tcp_port = item.get("port")
                     if not isinstance(tcp_port, int):

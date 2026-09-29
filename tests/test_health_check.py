@@ -95,6 +95,18 @@ def test_health_check_timeout_lt1(caplog):
     assert "Unexpected value: Timeout must be greater than zero" in caplog.messages
 
 
+def test_health_check_retries_lt0(caplog):
+    health_check_retries_lt0 = healthcheck(
+        service="example.com", 
+        port=443, 
+        timeout=3, 
+        healthurl="https://example.com",
+        retries=-1)
+
+    assert len(caplog.records) == 1
+    assert "Unexpected value: Retries must be a positive number" in caplog.messages
+
+
 def test_health_check_dns_immediate_success(mocker):
     mock_sleep = mocker.patch("time.sleep")
 

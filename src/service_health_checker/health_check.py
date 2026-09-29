@@ -54,6 +54,9 @@ def healthcheck(
         if timeout <= 0:
             raise ValueError("Timeout must be greater than zero")
 
+        if retries < 0:
+            raise ValueError("Retries must be a positive number")
+
         dns_check = check_dns(service=service)
         results["dns"] = dns_check.success
         if dns_check.success == True:

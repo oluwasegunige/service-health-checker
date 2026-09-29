@@ -47,6 +47,9 @@ def load_config(config_path):
             retries = config_file.get("retries")
             if retries and not isinstance(retries, int):
                 raise ConfigError(f"Expected retries as int, but got {type(retries).__name__}")
+
+            if retries and retries < 0:
+                raise ConfigError("Retries must be a positive number")
             
             if not retries:
                 retries = 2

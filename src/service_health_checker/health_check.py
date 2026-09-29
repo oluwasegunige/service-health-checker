@@ -48,6 +48,9 @@ def healthcheck(
         if service == "":
             raise ValueError("Host cannot be empty")
 
+        if port < 1 or port > 65535:
+            raise ValueError("Port must be an integer in the valid TCP port range (1–65535)")
+
         dns_check = check_dns(service=service)
         results["dns"] = dns_check.success
         if dns_check.success == True:

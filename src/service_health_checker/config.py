@@ -39,6 +39,9 @@ def load_config(config_path):
                 healthurl = ""
 
             retries = config_file.get("retries")
+            if retries and not isinstance(retries, int):
+                raise ConfigError(f"Expected retries as int, but got {type(retries).__name__}")
+            
             if not retries:
                 retries = 2
 

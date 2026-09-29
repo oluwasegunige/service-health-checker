@@ -245,6 +245,33 @@ def test_load_config_with_tcp_port_str():
     assert str(load_config_with_tcp_port_str.value) == f"Expected an int as port, but got {type(tcp_port).__name__}"
 
 
+def test_load_config_with_retries_str():
+    retries = "banana"
+    yaml_file = "tests/test_config.yaml"
+
+    yaml_content = {
+        "name": "example",
+        "host": "example.com",
+        "tcp": [
+            {"port": 443},
+            {"timeout": 3}
+        ],
+        "healthurl": "https://example.com/v1/health",
+        "retries": retries
+    }
+
+    with open(yaml_file, "w") as file:
+        yaml.dump(
+            yaml_content, file, default_flow_style=False, sort_keys=False)
+    
+    with pytest.raises(
+        ConfigError, 
+        match=f"Expected retries as int, but got {type(retries).__name__}"
+    ) as load_config_with_retries_str:
+        load_config(yaml_file)
+    assert str(load_config_with_retries_str.value) == f"Expected retries as int, but got {type(retries).__name__}"
+
+
 def test_load_config_with_file_not_exists():
     yaml_file = "tests/test_config.yaml"
 

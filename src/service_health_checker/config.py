@@ -32,7 +32,7 @@ def load_config(config_path):
                 if "port" in item:
                     tcp_port = item.get("port")
                     if not isinstance(tcp_port, int):
-                        raise ConfigError(f"Expected an int, but got {type(tcp_port).__name__}")
+                        raise ConfigError(f"Expected an int as port, but got {type(tcp_port).__name__}")
                     
             healthurl = config_file.get("healthurl")
             if not healthurl:

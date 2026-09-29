@@ -6,4 +6,4 @@ app = typer.Typer()
 app.command()(healthcheck)
 
 if __name__ == "__main__":
-    app()
+    raise SystemExit(app())

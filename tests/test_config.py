@@ -239,10 +239,10 @@ def test_load_config_with_tcp_port_str():
     
     with pytest.raises(
         ConfigError, 
-        match=f"Expected an int, but got {type(tcp_port).__name__}"
+        match=f"Expected an int as port, but got {type(tcp_port).__name__}"
     ) as load_config_with_tcp_port_str:
         load_config(yaml_file)
-    assert str(load_config_with_tcp_port_str.value) == f"Expected an int, but got {type(tcp_port).__name__}"
+    assert str(load_config_with_tcp_port_str.value) == f"Expected an int as port, but got {type(tcp_port).__name__}"
 
 
 def test_load_config_with_file_not_exists():

@@ -10,6 +10,9 @@ def check_tcp_connection(host: str, port: int, timeout: float):
     if host == "":
         raise ValueError("Hostname is required")
 
+    if not isinstance(port, int):
+        raise TypeError(f"Expected an int as port, but got {type(port).__name__}")
+
     if port <= 0:
         raise ValueError("Port must be greater than zero")
         

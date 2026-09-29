@@ -33,14 +33,13 @@ def test_health_check_happy(mocker):
         return_value=CheckResult(
             check_type="http", success=True, duration=1.5))
 
-    with pytest.raises(SystemExit) as health_check_happy:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_happy = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_happy.value.code == 0
+    assert health_check_happy == 0
     mock_dns_check.assert_called_once_with(service="example.com")
     mock_check_tcp_connection.assert_called_once_with(
         host="example.com", port=80, timeout=5)
@@ -60,14 +59,13 @@ def test_health_check_dns_immediate_success(mocker):
         return_value=CheckResult(
             check_type="tcp", success=True, duration=0.19))
 
-    with pytest.raises(SystemExit) as health_check_dns_immediate_success:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_dns_immediate_success = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_dns_immediate_success.value.code == 0
+    assert health_check_dns_immediate_success == 0
     mock_dns_check.assert_called_once_with(service="example.com")
     mock_sleep.assert_not_called()
     mock_check_tcp_connection.assert_called()
@@ -89,14 +87,13 @@ def test_health_check_dns_fail_once(mocker):
         return_value=CheckResult(
             check_type="tcp", success=True, duration=0.19))
 
-    with pytest.raises(SystemExit) as health_check_dns_fail_once:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_dns_fail_once = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_dns_fail_once.value.code == 0
+    assert health_check_dns_fail_once == 0
     assert mock_dns_check.call_count == 2
     mock_sleep.assert_called_once()
     mock_get_delay.assert_called_once()
@@ -120,14 +117,13 @@ def test_health_check_dns_fail_thrice_default_max(mocker):
         return_value=CheckResult(
             check_type="tcp", success=True, duration=0.19))
 
-    with pytest.raises(SystemExit) as health_check_dns_fail_thrice_default_max:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_dns_fail_thrice_default_max = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_dns_fail_thrice_default_max.value.code == 1
+    assert health_check_dns_fail_thrice_default_max == 1
     assert mock_dns_check.call_count == 3
     assert mock_sleep.call_count == 2
     assert mock_get_delay.call_count == 2
@@ -151,14 +147,13 @@ def test_health_check_tcp_immediate_success(mocker):
         return_value=CheckResult(
             check_type="http", success=True, duration=1.5))
 
-    with pytest.raises(SystemExit) as health_check_tcp_immediate_success:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_tcp_immediate_success = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_tcp_immediate_success.value.code == 0
+    assert health_check_tcp_immediate_success == 0
     mock_dns_check.assert_called()
     mock_check_tcp_connection.assert_called_once_with(
         host="example.com", port=80, timeout=5)
@@ -191,14 +186,13 @@ def test_health_check_tcp_fail_once(mocker):
         return_value=CheckResult(
             check_type="http", success=True, duration=1.5))
 
-    with pytest.raises(SystemExit) as health_check_tcp_fail_once:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_tcp_fail_once = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_tcp_fail_once.value.code == 0
+    assert health_check_tcp_fail_once == 0
     mock_dns_check.assert_called()
     assert mock_check_tcp_connection.call_count == 2
     mock_sleep.assert_called_once()
@@ -240,14 +234,13 @@ def test_health_check_tcp_fail_thrice_default_max(mocker):
         return_value=CheckResult(
             check_type="http", success=True, duration=1.5))
 
-    with pytest.raises(SystemExit) as health_check_tcp_fail_thrice_default_max:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_tcp_fail_thrice_default_max = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_tcp_fail_thrice_default_max.value.code == 1
+    assert health_check_tcp_fail_thrice_default_max == 1
     mock_dns_check.assert_called()
     assert mock_check_tcp_connection.call_count == 3
     assert mock_sleep.call_count == 2
@@ -273,14 +266,13 @@ def test_health_check_http_immediate_success(mocker):
         return_value=CheckResult(
             check_type="http", success=True, duration=1.5))
 
-    with pytest.raises(SystemExit) as health_check_http_immediate_success:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_http_immediate_success = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_http_immediate_success.value.code == 0
+    assert health_check_http_immediate_success == 0
     mock_dns_check.assert_called()
     mock_check_tcp_connection.assert_called()
     mock_sleep.assert_not_called()
@@ -309,14 +301,13 @@ def test_health_check_http_404_failure(mocker):
             duration=1.5, 
             details={"status_code": 404}))
 
-    with pytest.raises(SystemExit) as health_check_http_404_failure:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_http_404_failure = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_http_404_failure.value.code == 1
+    assert health_check_http_404_failure == 1
     mock_dns_check.assert_called()
     mock_check_tcp_connection.assert_called()
     mock_sleep.assert_not_called()
@@ -352,14 +343,13 @@ def test_health_check_http_500_fail_once(mocker):
                 success=True, 
                 duration=1.5)])
 
-    with pytest.raises(SystemExit) as health_check_http_500_fail_once:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_http_500_fail_once = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_http_500_fail_once.value.code == 0
+    assert health_check_http_500_fail_once == 0
     mock_dns_check.assert_called()
     mock_check_tcp_connection.assert_called()
     mock_sleep.assert_called_once()
@@ -401,14 +391,13 @@ def test_health_check_http_500_fail_thrice_default_max(mocker):
                 duration=1.5, 
                 details={"status_code": 500})])
 
-    with pytest.raises(SystemExit) as health_check_http_500_fail_thrice_default_max:
-        healthcheck(
-            service="example.com", 
-            port=80, 
-            timeout=5, 
-            healthurl="https://example.com")
+    health_check_http_500_fail_thrice_default_max = healthcheck(
+        service="example.com", 
+        port=80, 
+        timeout=5, 
+        healthurl="https://example.com")
 
-    assert health_check_http_500_fail_thrice_default_max.value.code == 1
+    assert health_check_http_500_fail_thrice_default_max == 1
     mock_dns_check.assert_called()
     mock_check_tcp_connection.assert_called()
     assert mock_sleep.call_count == 2
@@ -449,14 +438,13 @@ def test_health_check_with_config(mocker):
         return_value=CheckResult(
             check_type="http", success=True, duration=1.5))
 
-    with pytest.raises(SystemExit) as health_check_with_config:
-        healthcheck(
-            service="google.com", 
-            port=443, 
-            timeout=3, 
-            healthurl="https://google.com", 
-            retries=2, 
-            configfile="tests/test_config.yaml")
+    health_check_with_config = healthcheck(
+        service="google.com", 
+        port=443, 
+        timeout=3, 
+        healthurl="https://google.com", 
+        retries=2, 
+        configfile="tests/test_config.yaml")
 
     mock_load_config.assert_called_once_with(
         config_path="tests/test_config.yaml")
@@ -465,6 +453,6 @@ def test_health_check_with_config(mocker):
         host=expected_host, port=expected_port, timeout=expected_timeout)
     mock_make_http_request.assert_called_once_with(
         service=expected_host, healthurl=expected_healthurl)
-    assert health_check_with_config.value.code == 0
+    assert health_check_with_config == 0
 
     

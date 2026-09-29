@@ -33,6 +33,8 @@ def load_config(config_path):
                     tcp_port = item.get("port")
                     if not isinstance(tcp_port, int):
                         raise ConfigError(f"Expected an int as port, but got {type(tcp_port).__name__}")
+                    if tcp_port < 1 or tcp_port > 65535:
+                        raise ConfigError("Port must be an integer in the valid TCP port range (1–65535)")
                     
             healthurl = config_file.get("healthurl")
             if not healthurl:

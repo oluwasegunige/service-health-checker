@@ -245,6 +245,30 @@ def test_load_config_with_tcp_port_str():
     assert str(load_config_with_tcp_port_str.value) == f"Expected an int as port, but got {type(tcp_port).__name__}"
 
 
+def test_load_config_with_tcp_port_lt1():
+    tcp_port = 0
+    yaml_file = "tests/test_config.yaml"
+
+    yaml_content = {
+        "name": "example",
+        "host": "example.com",
+        "tcp": [
+            {"port": tcp_port},
+            {"timeout": 3}
+        ],
+        "healthurl": "https://example.com/v1/health",
+        "retries": 2
+    }
+
+    with open(yaml_file, "w") as file:
+        yaml.dump(
+            yaml_content, file, default_flow_style=False, sort_keys=False)
+    
+    with pytest.raises(ConfigError) as load_config_with_tcp_port_str:
+        load_config(yaml_file)
+    assert str(load_config_with_tcp_port_str.value) == "Port must be an integer in the valid TCP port range (1–65535)"
+
+
 def test_load_config_with_retries_str():
     retries = "banana"
     yaml_file = "tests/test_config.yaml"

@@ -64,3 +64,5 @@ def load_config(config_path):
             return service_config
     except FileNotFoundError:
         raise ConfigError(f"Configuration file {config_path} not found.")
+    except yaml.YAMLError as exc:
+        raise ConfigError(f"Error parsing YAML file: {exc}")

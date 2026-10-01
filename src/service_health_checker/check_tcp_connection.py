@@ -1,20 +1,23 @@
 import time, socket
 
 from .models import CheckResult
-from .logging_config import logger
 
 def check_tcp_connection(host: str, port: int, timeout: float):
     """
     Attempts to establish a TCP connection to a host and port, 
     measuring the time it takes.
     """
-    if not host:
-        logger.error("Host is required for TCP check.")
-        exit(1)
+    if host == "":
+        raise ValueError("Hostname is required")
+
+    if not isinstance(port, int):
+        raise TypeError(f"Expected an int as port, but got {type(port).__name__}")
+
+    if port <= 0:
+        raise ValueError("Port must be greater than zero")
         
-    if not timeout or timeout <= 0:
-        logger.error("Timeout is required for TCP check and must be greater than 0.")
-        exit(1)
+    if timeout <= 0:
+        raise ValueError("Timeout must be greater than zero")
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(timeout)

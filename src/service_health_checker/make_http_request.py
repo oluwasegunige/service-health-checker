@@ -1,23 +1,27 @@
-import time, requests
+import time, httpx
 
 from .models import CheckResult
-from .logging_config import logger
+from .is_valid_uri import is_valid_uri
 
-def make_http_request(service: str, healthurl: str):
+async def make_http_request(
+        client: httpx.AsyncClient, host: str, healthurl: str
+):
     """
     Attempts to make an HTTP GET request to a service, 
     measuring the time it takes.
     """
-    if not healthurl:
-        if not service:
-            logger.error("Service/health URL is required for HTTP check.")
-            exit(1)
-        url = "https://" + service
+    if healthurl == "":
+        if host == "":
+            raise ValueError("Host/health URL is required for HTTP check.")
+        url = "https://" + host
     else:
         url = healthurl
+
+    if not is_valid_uri(url):
+        raise ValueError("HealthURL is not a valid URI")
     
     start_time = time.perf_counter()
-    response = requests.get(url)
+    response = await client.get(url)
     elapsed_time = (time.perf_counter() - start_time)
     status_code = response.status_code
 

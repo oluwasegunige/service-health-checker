@@ -2,17 +2,17 @@ import time, socket
 
 from .models import CheckResult
 
-def check_dns(service:str):
+async def check_dns(host:str):
     """
     Attempts to perform a forward DNS lookup to a service, 
     measuring the time it takes.
     """
-    if service == "":
+    if host == "":
         raise ValueError("Hostname is required")
         
     start_time = time.perf_counter()
     try:
-        ip_address = socket.gethostbyname(service)
+        ip_address = socket.gethostbyname(host)
         end_time = time.perf_counter()
         duration = (end_time - start_time)
         return CheckResult( 

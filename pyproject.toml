@@ -11,14 +11,17 @@ dependencies = [
     "typer>=0.27.2",
     "typing_extensions>=4.16",
     "requests>=2.34.2",
-    "pyyaml>=6.0.3"
+    "pyyaml>=6.0.3",
+    "httpx>=0.28.1"
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=9.1.1",
-    "requests-mock>1.12.1",
-    "pytest-mock>3.15.1"
+    "requests-mock>=1.12.1",
+    "pytest-mock>=3.15.1",
+    "pytest-asyncio>=1.4.0",
+    "pytest-httpx-0.36.2"
 ]
 
 [project.scripts]
@@ -26,3 +29,6 @@ healthcheck = "service_health_checker.cli:app"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/service_health_checker"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

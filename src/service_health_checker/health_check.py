@@ -105,7 +105,7 @@ async def healthcheck_orchestrator(
         raise typer.Exit(code=1)
 
 async def monitor_all(services: list[ServiceConfig]):
-    """Creates a shared HTTP clients and spawns all monitoring tasks concurrently"""
+    """Creates a shared HTTP client and spawns all monitoring tasks concurrently"""
     async with httpx.AsyncClient() as client:
         tasks = [healthcheck_orchestrator(
             client, service) for service in services]

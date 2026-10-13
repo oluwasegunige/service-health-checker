@@ -1,6 +1,7 @@
-import pytest, httpx, typer
+from unittest.mock import MagicMock
+import pytest, httpx, typer, asyncio
 
-from src.service_health_checker.health_check import get_delay, healthcheck, monitor_all, healthcheck_orchestrator
+from src.service_health_checker.health_check import get_delay, healthcheck, monitor_all, healthcheck_orchestrator, load_config
 from src.service_health_checker.models import CheckResult
 from src.service_health_checker.config import ServiceConfig
 
@@ -1169,3 +1170,76 @@ async def test_healthcheck_orchestrator_http_500_retries_0(mocker):
     mock_sleep.assert_not_called()
     assert orchestrator.value.exit_code == 1
 
+# healthcheck() tests
+
+def test_healthcheck_missing_config_file(mocker):
+    mock_load_config = mocker.patch(
+        "src.service_health_checker.health_check.load_config"
+    )
+    mock_run = mocker.patch("asyncio.run")
+
+    config = MagicMock()
+    config.exists.return_value = False
+
+    with pytest.raises(typer.Exit) as check:
+        healthcheck(config=config)
+
+    assert check.value.exit_code == 1
+    mock_load_config.assert_not_called()
+    mock_run.assert_not_called()
+
+
+def test_healthcheck_empty_config_file(mocker):
+    mock_load_config = mocker.patch(
+        "src.service_health_checker.health_check.load_config",
+        return_value=[]
+    )
+    mock_run = mocker.patch("asyncio.run")
+    mock_monitor_all = mocker.patch(
+        "src.service_health_checker.health_check.monitor_all"
+    )
+
+    config = MagicMock()
+
+    with pytest.raises(typer.Exit) as check:
+        healthcheck(config=config)
+
+    assert check.value.exit_code == 1
+    mock_load_config.assert_called_once()
+    mock_run.assert_not_called()
+    mock_monitor_all.assert_not_called()
+
+
+def test_healthcheck_valid_config_file(mocker):
+    service1 = ServiceConfig(
+        host="example.com", 
+        port=443, 
+        timeout=3, 
+        healthurl="https://example.com",
+        retries=2
+    )
+    service2 = ServiceConfig(
+        host="example.com", 
+        port=443, 
+        timeout=3, 
+        healthurl="https://example.com",
+        retries=2
+    )
+    services = [service1, service2]
+    mock_load_config = mocker.patch(
+        "src.service_health_checker.health_check.load_config",
+        return_value=services
+    )
+    mock_run = mocker.patch("src.service_health_checker.health_check.asyncio.run")
+    mock_monitor_all = mocker.patch(
+        "src.service_health_checker.health_check.monitor_all"
+    )
+
+    config = MagicMock()
+
+    healthcheck(config=config)
+
+    mock_load_config.assert_called_once_with(config_path=config)
+    mock_run.assert_called()
+    mock_monitor_all.assert_called_once_with(services=services)
+    
